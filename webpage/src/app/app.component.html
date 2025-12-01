@@ -1,0 +1,81 @@
+<div class="min-h-screen bg-gray-100">
+  <!-- Mobile Menu Overlay -->
+  <div 
+    *ngIf="mobileMenuOpen"
+    class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+    (click)="closeMobileMenu()">
+  </div>
+
+  <!-- Navigation Sidebar -->
+  <div 
+    class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white shadow-lg z-50 transform transition-transform duration-300 ease-in-out lg:translate-x-0"
+    [class.translate-x-0]="mobileMenuOpen"
+    [class.-translate-x-full]="!mobileMenuOpen">
+    <div class="flex flex-col h-full">
+      <!-- Logo/Header -->
+      <div class="p-6 border-b border-gray-700 flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-bold">Internal Tools</h1>
+          <p class="text-sm text-gray-400 mt-1">Dashboard</p>
+        </div>
+        <button 
+          (click)="closeMobileMenu()"
+          class="lg:hidden text-gray-400 hover:text-white">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Navigation Links -->
+      <nav class="flex-1 p-4 space-y-2">
+        <a 
+          routerLink="/tickets" 
+          routerLinkActive="bg-gray-700"
+          (click)="closeMobileMenu()"
+          class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+          [class.bg-gray-700]="router.isActive('/tickets', false)">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Ticket Viewer
+        </a>
+        <a 
+          routerLink="/knowledgebase" 
+          routerLinkActive="bg-gray-700"
+          (click)="closeMobileMenu()"
+          class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+          [class.bg-gray-700]="router.isActive('/knowledgebase', false)">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Knowledgebase Editor
+        </a>
+        <a 
+          routerLink="/logs" 
+          routerLinkActive="bg-gray-700"
+          (click)="closeMobileMenu()"
+          class="flex items-center px-4 py-3 text-gray-300 rounded-lg hover:bg-gray-700 transition-colors"
+          [class.bg-gray-700]="router.isActive('/logs', false)">
+          <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          Live Logs
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="lg:ml-64 p-4 lg:p-8">
+    <!-- Mobile Menu Button -->
+    <button 
+      (click)="toggleMobileMenu()"
+      class="lg:hidden fixed top-4 left-4 z-30 bg-gray-800 text-white p-2 rounded-lg shadow-lg hover:bg-gray-700 transition-colors">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <router-outlet></router-outlet>
+  </div>
+</div>

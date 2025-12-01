@@ -1,0 +1,64 @@
+# Root-level .gitignore for Flutter + Angular Assessment Project
+# This file handles root-level files and common patterns
+# Subdirectory .gitignore files (flutter_app/.gitignore and webpage/.gitignore) handle their respective directories
+
+# System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE and Editor files (root level)
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Build artifacts (if any at root)
+dist/
+build/
+out/
+
+# Package manager lock files (optional - uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+
+# Assessment/Review files (optional - uncomment if you don't want to commit these)
+# ASSESSMENT_REVIEW.md
+
