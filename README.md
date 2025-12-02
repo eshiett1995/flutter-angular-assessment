@@ -237,6 +237,15 @@ flutter pub get
 
 ## Development Notes
 
+### State Management
+✅ **Approach**: The app uses Flutter's built-in reactive patterns without external state management libraries:
+- **StreamController + StreamBuilder**: Used for message updates (reactive streams)
+- **ChangeNotifier**: Used for theme management (observer pattern)
+- **StatefulWidget + setState**: Used for local UI state
+- **Singleton Pattern**: Services are singletons to maintain state across screen navigations
+
+This lightweight approach works well for the app's current scope and avoids unnecessary dependencies. For larger projects with more complex state requirements, consider using **Riverpod** or **Provider** for better dependency injection, state organization, and testability.
+
 ### Message Persistence
 ✅ **Implemented**: Messages are automatically saved to local storage using SharedPreferences and restored when the app is reopened. Messages persist across app restarts. The service uses a singleton pattern to maintain state across screen navigations.
 
@@ -259,7 +268,11 @@ The following features can be added as further enhancements:
 
 ### Flutter App
 - **Framework**: Flutter 3.0+
-- **State Management**: StreamBuilder with StreamController, Singleton pattern for services
+- **State Management**: 
+  - Built-in reactive patterns (StreamController + StreamBuilder, ChangeNotifier)
+  - No external state management libraries (works well for this app's scope)
+  - Singleton pattern for service instances
+  - For larger projects, consider Riverpod or Provider
 - **WebView**: webview_flutter package with JavaScript injection for theme sync
 - **Local Storage**: shared_preferences (for message and theme persistence)
 - **Theme Management**: Custom ThemeService with light/dark theme support
