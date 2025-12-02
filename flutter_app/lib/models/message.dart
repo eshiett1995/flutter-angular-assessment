@@ -6,6 +6,7 @@ class Message {
   final DateTime timestamp;
   final bool isFromUser;
   final MessageType type;
+  final String? imagePath; // Path to image file for image messages
 
   Message({
     required this.id,
@@ -13,6 +14,7 @@ class Message {
     required this.timestamp,
     required this.isFromUser,
     this.type = MessageType.text,
+    this.imagePath,
   });
 
   String get formattedTime {
@@ -26,6 +28,7 @@ class Message {
       'timestamp': timestamp.toIso8601String(),
       'isFromUser': isFromUser,
       'type': type.toString(),
+      'imagePath': imagePath,
     };
   }
 
@@ -39,6 +42,7 @@ class Message {
         (e) => e.toString() == json['type'],
         orElse: () => MessageType.text,
       ),
+      imagePath: json['imagePath'] as String?,
     );
   }
 }

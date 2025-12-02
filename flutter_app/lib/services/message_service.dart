@@ -103,20 +103,22 @@ class MessageService {
         _random.nextInt(1000).toString();
   }
 
-  void addMessage(String text, {required bool isFromUser}) {
+  void addMessage(String text, {required bool isFromUser, String? imagePath, MessageType type = MessageType.text}) {
     final message = Message(
       id: _generateId(),
       text: text,
       timestamp: DateTime.now(),
       isFromUser: isFromUser,
+      type: type,
+      imagePath: imagePath,
     );
 
     _messages.add(message);
     _messagesController.add(_messages);
     _saveMessages();
 
-    // Simulate agent response after user message
-    if (isFromUser) {
+    // Simulate agent response after user message (only for text messages)
+    if (isFromUser && type == MessageType.text) {
       Future.delayed(const Duration(seconds: 1, milliseconds: 500), () {
         final response = _agentResponses[_random.nextInt(_agentResponses.length)];
         addMessage(response, isFromUser: false);
