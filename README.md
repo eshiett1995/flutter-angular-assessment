@@ -34,6 +34,9 @@ This project contains a Flutter messaging application with an embedded Angular d
 - ✅ Simulated support agent responses
 - ✅ Clear messages functionality
 - ✅ **Message persistence** (messages saved locally using SharedPreferences)
+- ✅ **Emoji support** with emoji picker (tap emoji button to open picker)
+- ✅ **Image message support** (choose from gallery or take photo)
+- ✅ **Image persistence** (images saved to app storage and persist across restarts)
 - ✅ **Dark mode support** with theme toggle in app bar
 - ✅ **Theme synchronization** with embedded Angular dashboard
 - ✅ Embedded WebView for Angular dashboard
@@ -135,6 +138,8 @@ flutter pub get
 - The app uses `http://10.0.2.2:4200` to access the host machine's localhost from the Android emulator
 - Make sure the Angular server is running on your host machine
 - Internet permission is configured in `AndroidManifest.xml`
+- Cleartext traffic (HTTP) is enabled for localhost connections (required for development)
+- Network security config allows HTTP connections to localhost and 10.0.2.2
 
 ### iOS
 - The app uses `http://localhost:4200` for iOS simulators
@@ -152,8 +157,13 @@ flutter pub get
 2. Tap the send button or press Enter
 3. Wait for the simulated support agent response (appears after ~1.5 seconds)
 4. Messages automatically scroll to show the latest
-5. Use the trash icon in the app bar to clear all messages
-6. Toggle dark mode using the sun/moon icon in the app bar
+5. **Add emojis**: Tap the emoji button (😊) to open the emoji picker and insert emojis into your message
+6. **Send images**: Tap the image button (📷) to:
+   - Choose an image from your gallery
+   - Take a photo with your camera
+7. Images display in message bubbles and persist across app restarts
+8. Use the trash icon in the app bar to clear all messages
+9. Toggle dark mode using the sun/moon icon in the app bar
 
 ### Dashboard Screen
 1. Navigate to the Dashboard tab using bottom navigation
@@ -208,13 +218,18 @@ If you get errors like "Unable to read project 'Runner.xcodeproj'" or "The proje
    - Physical Device: May need your computer's IP address (e.g., `192.168.1.x:4200`)
 
 3. **Check network permissions:**
-   - Android: Internet permission is already configured
-   - iOS: May need to add App Transport Security settings for HTTP (development only)
+   - Android: Internet permission and cleartext traffic are configured
+   - iOS: App Transport Security settings allow HTTP (development only)
 
 4. **For physical devices:**
    - Make sure your device is on the same network as your development machine
    - Use your computer's local IP address instead of localhost
    - Update the URL in `dashboard_screen.dart` if needed
+
+5. **If you see `ERR_CLEARTEXT_NOT_PERMITTED`:**
+   - Android: The network security config should allow cleartext traffic (already configured)
+   - Make sure you've rebuilt the app after the manifest changes
+   - Check that `network_security_config.xml` exists in `android/app/src/main/res/xml/`
 
 ### Angular build errors
 
@@ -249,6 +264,8 @@ This lightweight approach works well for the app's current scope and avoids unne
 ### Message Persistence
 ✅ **Implemented**: Messages are automatically saved to local storage using SharedPreferences and restored when the app is reopened. Messages persist across app restarts. The service uses a singleton pattern to maintain state across screen navigations.
 
+**Image Persistence**: Images are saved to the app's documents directory (`messages_images/`) and persist across app restarts. Image paths are stored as relative paths in SharedPreferences and reconstructed when loading to handle app container UUID changes.
+
 ### Dark Mode & Theme Synchronization
 ✅ **Implemented**: Both Flutter and Angular apps support dark mode with synchronized themes:
 - **Flutter**: Toggle dark mode using the sun/moon icon in the app bar (available on both Messages and Dashboard screens)
@@ -256,13 +273,26 @@ This lightweight approach works well for the app's current scope and avoids unne
 - **Synchronization**: When you change the theme in Flutter, it automatically syncs to the embedded Angular dashboard via JavaScript injection
 - **Persistence**: Theme preferences are saved locally and persist across app restarts
 
+### Emoji & Image Message Support
+✅ **Implemented**: 
+- **Emoji Picker**: Tap the emoji button in the input area to open a full emoji picker. Select emojis to insert into your messages. Emoji messages display with larger font size for better visibility.
+- **Image Messages**: 
+  - Choose images from your device gallery
+  - Take photos directly with the camera
+  - Images are displayed in message bubbles (200x200px, rounded corners)
+  - Images are automatically saved to app storage for persistence
+  - Images persist across app restarts
+- **Permissions**: 
+  - Android: Camera and storage permissions configured
+  - iOS: Camera and photo library usage descriptions added
+
 ### Additional Bonus Features
 The following features can be added as further enhancements:
 - Notification badges for unread messages
-- Emoji picker for emoji support
-- Image message support
 - Message search functionality
 - Two-way theme synchronization (Angular → Flutter)
+- Image compression/optimization
+- Video message support
 
 ## Technical Stack
 
@@ -276,6 +306,9 @@ The following features can be added as further enhancements:
 - **WebView**: webview_flutter package with JavaScript injection for theme sync
 - **Local Storage**: shared_preferences (for message and theme persistence)
 - **Theme Management**: Custom ThemeService with light/dark theme support
+- **Emoji Support**: emoji_picker_flutter package
+- **Image Support**: image_picker package for gallery and camera access
+- **File Management**: path_provider and path packages for image storage
 
 ### Angular Dashboard
 - **Framework**: Angular 16+
@@ -295,6 +328,14 @@ This project meets all the requirements specified in the assessment:
 - ✅ Responsive design
 - ✅ Clean code architecture
 - ✅ Comprehensive setup documentation
+
+**Additional Features Implemented:**
+- ✅ Dark mode support (Flutter & Angular)
+- ✅ Theme synchronization between Flutter and Angular
+- ✅ Emoji picker and emoji message support
+- ✅ Image message support (gallery & camera)
+- ✅ Message and image persistence
+- ✅ Mobile-responsive Angular dashboard
 
 ## License
 
