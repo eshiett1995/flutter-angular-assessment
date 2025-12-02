@@ -1,20 +1,20 @@
 <div class="max-w-7xl mx-auto">
-  <div class="bg-white rounded-lg shadow-md p-6">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-3xl font-bold text-gray-800">Knowledge Base Editor</h2>
-      <div class="flex gap-3">
+  <div class="bg-white rounded-lg shadow-md p-4 sm:p-6">
+    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Knowledge Base Editor</h2>
+      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
         <button
           (click)="togglePreview()"
           [class.bg-blue-600]="previewMode"
           [class.bg-gray-300]="!previewMode"
-          class="px-4 py-2 rounded-lg font-medium text-white transition-colors">
+          class="px-4 py-2.5 rounded-lg font-medium text-white transition-colors w-full sm:w-auto text-sm sm:text-base">
           {{ previewMode ? 'Edit Mode' : 'Preview Mode' }}
         </button>
         <button
           (click)="saveArticle()"
           [class.bg-green-600]="!saved"
           [class.bg-green-400]="saved"
-          class="px-6 py-2 rounded-lg font-medium text-white transition-colors">
+          class="px-6 py-2.5 rounded-lg font-medium text-white transition-colors w-full sm:w-auto text-sm sm:text-base">
           {{ saved ? '✓ Saved' : 'Save Article' }}
         </button>
       </div>
@@ -41,7 +41,7 @@
     </div>
 
     <!-- Full Preview Mode -->
-    <div *ngIf="previewMode" class="border border-gray-300 rounded-lg p-8 bg-white">
+    <div *ngIf="previewMode" class="border border-gray-300 rounded-lg p-4 sm:p-8 bg-white">
       <div class="prose max-w-none" [innerHTML]="getPreviewHtml()"></div>
     </div>
   </div>

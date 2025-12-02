@@ -4,11 +4,21 @@ import '../models/message.dart';
 import 'storage_service.dart';
 
 class MessageService {
+  // Singleton instance
+  static MessageService? _instance;
+  static MessageService get instance {
+    _instance ??= MessageService._internal();
+    return _instance!;
+  }
+  
+  MessageService._internal();
+
   final _messagesController = StreamController<List<Message>>.broadcast();
   final List<Message> _messages = [];
   final Random _random = Random();
   final StorageService _storageService = StorageService();
   bool _isInitialized = false;
+  Future<void>? _initializationFuture;
 
   Stream<List<Message>> get messagesStream => _messagesController.stream;
   List<Message> get messages => List.unmodifiable(_messages);
@@ -26,23 +36,56 @@ class MessageService {
     "That makes sense. Here's what we can do...",
   ];
 
-  MessageService() {
-    _initialize();
+  Future<void> _initialize() async {
+    // If already initialized, just emit current messages
+    if (_isInitialized) {
+      _messagesController.add(_messages);
+      return;
+    }
+    
+    // If initialization is already in progress, wait for it
+    if (_initializationFuture != null) {
+      return _initializationFuture!;
+    }
+    
+    // Start initialization
+    _initializationFuture = _performInitialization();
+    await _initializationFuture;
   }
 
-  Future<void> _initialize() async {
-    if (_isInitialized) return;
-    
-    // Try to load saved messages
-    final savedMessages = await _storageService.loadMessages();
-    if (savedMessages.isNotEmpty) {
-      _messages.addAll(savedMessages);
+  Future<void> _performInitialization() async {
+    try {
+      // Try to load saved messages
+      final savedMessages = await _storageService.loadMessages();
+      
+      // Clear any existing messages first to avoid duplicates
+      _messages.clear();
+      
+      if (savedMessages.isNotEmpty) {
+        // Load saved messages
+        _messages.addAll(savedMessages);
+        print('✅ Loaded ${savedMessages.length} saved messages from storage');
+      } else {
+        // Initialize with default welcome message if no saved messages
+        _initializeDefaultMessage();
+        // Save the welcome message immediately
+        await _saveMessages();
+        print('✅ No saved messages found, initialized with welcome message');
+      }
+      
+      _isInitialized = true;
       _messagesController.add(_messages);
-    } else {
-      // Initialize with default welcome message if no saved messages
-      _initializeDefaultMessage();
+    } catch (e) {
+      print('❌ Error initializing MessageService: $e');
+      // Even on error, mark as initialized to prevent infinite retries
+      _isInitialized = true;
+      // Initialize with welcome message as fallback
+      if (_messages.isEmpty) {
+        _initializeDefaultMessage();
+      }
+      _messagesController.add(_messages);
+      rethrow;
     }
-    _isInitialized = true;
   }
 
   void _initializeDefaultMessage() {
@@ -90,11 +133,21 @@ class MessageService {
   }
 
   Future<void> _saveMessages() async {
-    await _storageService.saveMessages(_messages);
+    try {
+      await _storageService.saveMessages(_messages);
+      print('Saved ${_messages.length} messages to storage');
+    } catch (e) {
+      print('Error saving messages: $e');
+    }
   }
   
   Future<void> loadMessages() async {
-    await _initialize();
+    if (!_isInitialized) {
+      await _initialize();
+    } else {
+      // Already initialized, just emit current messages
+      _messagesController.add(_messages);
+    }
   }
 
   void dispose() {

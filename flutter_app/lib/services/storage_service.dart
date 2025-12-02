@@ -9,10 +9,12 @@ class StorageService {
     try {
       final prefs = await SharedPreferences.getInstance();
       final messagesJson = messages.map((m) => m.toJson()).toList();
-      await prefs.setString(_messagesKey, jsonEncode(messagesJson));
+      final jsonString = jsonEncode(messagesJson);
+      await prefs.setString(_messagesKey, jsonString);
+      print('💾 Saved ${messages.length} messages to SharedPreferences');
     } catch (e) {
-      // Handle error silently or log it
-      print('Error saving messages: $e');
+      print('❌ Error saving messages: $e');
+      rethrow;
     }
   }
 
@@ -22,13 +24,16 @@ class StorageService {
       final messagesJson = prefs.getString(_messagesKey);
       
       if (messagesJson == null || messagesJson.isEmpty) {
+        print('📭 No saved messages found in SharedPreferences');
         return [];
       }
 
       final List<dynamic> decoded = jsonDecode(messagesJson);
-      return decoded.map((json) => Message.fromJson(json)).toList();
+      final messages = decoded.map((json) => Message.fromJson(json)).toList();
+      print('📥 Successfully loaded ${messages.length} messages from SharedPreferences');
+      return messages;
     } catch (e) {
-      print('Error loading messages: $e');
+      print('❌ Error loading messages: $e');
       return [];
     }
   }

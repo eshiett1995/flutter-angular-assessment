@@ -10,7 +10,7 @@ class MessagesScreen extends StatefulWidget {
 }
 
 class _MessagesScreenState extends State<MessagesScreen> {
-  final MessageService _messageService = MessageService();
+  final MessageService _messageService = MessageService.instance;
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -48,7 +48,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
   void dispose() {
     _textController.dispose();
     _scrollController.dispose();
-    _messageService.dispose();
+    // Don't dispose the singleton service - it should persist across navigations
+    // _messageService.dispose();
     super.dispose();
   }
 
