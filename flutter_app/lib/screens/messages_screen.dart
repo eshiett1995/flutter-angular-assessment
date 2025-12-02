@@ -82,23 +82,37 @@ class _MessagesScreenState extends State<MessagesScreen> {
       if (image != null) {
         // Copy image to app directory for persistence
         final appDir = await getApplicationDocumentsDirectory();
-        final fileName = path.basename(image.path);
-        final savedImage = File(image.path);
-        final newPath = path.join(appDir.path, 'messages_images', fileName);
+        // Use unique filename with timestamp to avoid conflicts
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final extension = path.extension(image.path);
+        final fileName = 'image_$timestamp$extension';
+        final imagesDir = Directory(path.join(appDir.path, 'messages_images'));
         
         // Create directory if it doesn't exist
-        await Directory(path.dirname(newPath)).create(recursive: true);
+        if (!await imagesDir.exists()) {
+          await imagesDir.create(recursive: true);
+        }
         
-        // Copy file
+        final newPath = path.join(imagesDir.path, fileName);
+        final savedImage = File(image.path);
+        
+        // Copy file to persistent location
         final copiedFile = await savedImage.copy(newPath);
         
-        _messageService.addMessage(
-          '📷 Image',
-          isFromUser: true,
-          imagePath: copiedFile.path,
-          type: MessageType.image,
-        );
-        _scrollToBottom();
+        // Verify file was copied successfully
+        if (await copiedFile.exists()) {
+          // Use absolute path for immediate display, will convert to relative when saving
+          _messageService.addMessage(
+            '📷 Image',
+            isFromUser: true,
+            imagePath: copiedFile.absolute.path, // Use absolute path for display
+            type: MessageType.image,
+          );
+          print('✅ Image saved: ${copiedFile.absolute.path}');
+          _scrollToBottom();
+        } else {
+          throw Exception('Failed to save image file');
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -119,23 +133,37 @@ class _MessagesScreenState extends State<MessagesScreen> {
       if (image != null) {
         // Copy image to app directory for persistence
         final appDir = await getApplicationDocumentsDirectory();
-        final fileName = path.basename(image.path);
-        final savedImage = File(image.path);
-        final newPath = path.join(appDir.path, 'messages_images', fileName);
+        // Use unique filename with timestamp to avoid conflicts
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final extension = path.extension(image.path);
+        final fileName = 'photo_$timestamp$extension';
+        final imagesDir = Directory(path.join(appDir.path, 'messages_images'));
         
         // Create directory if it doesn't exist
-        await Directory(path.dirname(newPath)).create(recursive: true);
+        if (!await imagesDir.exists()) {
+          await imagesDir.create(recursive: true);
+        }
         
-        // Copy file
+        final newPath = path.join(imagesDir.path, fileName);
+        final savedImage = File(image.path);
+        
+        // Copy file to persistent location
         final copiedFile = await savedImage.copy(newPath);
         
-        _messageService.addMessage(
-          '📷 Photo',
-          isFromUser: true,
-          imagePath: copiedFile.path,
-          type: MessageType.image,
-        );
-        _scrollToBottom();
+        // Verify file was copied successfully
+        if (await copiedFile.exists()) {
+          // Use absolute path for immediate display, will convert to relative when saving
+          _messageService.addMessage(
+            '📷 Photo',
+            isFromUser: true,
+            imagePath: copiedFile.absolute.path, // Use absolute path for display
+            type: MessageType.image,
+          );
+          print('✅ Photo saved: ${copiedFile.absolute.path}');
+          _scrollToBottom();
+        } else {
+          throw Exception('Failed to save photo file');
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -393,22 +421,37 @@ class _MessageBubble extends StatelessWidget {
                 children: [
                   // Display image if message type is image
                   if (message.type == MessageType.image && message.imagePath != null)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(message.imagePath!),
-                        width: 200,
-                        height: 200,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            width: 200,
-                            height: 200,
-                            color: Colors.grey[300],
-                            child: const Icon(Icons.broken_image),
+                    Builder(
+                      builder: (context) {
+                        String? imagePath = message.imagePath;
+                        
+                        // If it's a relative path, we need to reconstruct it
+                        // But for immediate display, it should be absolute
+                        if (imagePath != null && !path.isAbsolute(imagePath)) {
+                          // This shouldn't happen for new messages, but handle it
+                          return FutureBuilder<String?>(
+                            future: () async {
+                              final appDir = await getApplicationDocumentsDirectory();
+                              return path.join(appDir.path, imagePath!);
+                            }(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData && snapshot.data != null) {
+                                imagePath = snapshot.data;
+                              } else {
+                                return Container(
+                                  width: 200,
+                                  height: 200,
+                                  color: Colors.grey[300],
+                                  child: const Center(child: CircularProgressIndicator()),
+                                );
+                              }
+                              return _buildImageWidget(imagePath!);
+                            },
                           );
-                        },
-                      ),
+                        }
+                        
+                        return _buildImageWidget(imagePath!);
+                      },
                     ),
                   // Display text (or emoji/text)
                   if (message.text.isNotEmpty)
@@ -447,6 +490,37 @@ class _MessageBubble extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildImageWidget(String imagePath) {
+    final imageFile = File(imagePath);
+    if (!imageFile.existsSync()) {
+      return Container(
+        width: 200,
+        height: 200,
+        color: Colors.grey[300],
+        child: const Icon(Icons.broken_image),
+      );
+    }
+    
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.file(
+        imageFile,
+        width: 200,
+        height: 200,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          print('Error loading image at $imagePath: $error');
+          return Container(
+            width: 200,
+            height: 200,
+            color: Colors.grey[300],
+            child: const Icon(Icons.broken_image),
+          );
+        },
       ),
     );
   }
