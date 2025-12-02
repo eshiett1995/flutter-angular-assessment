@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/message.dart';
 import '../services/message_service.dart';
+import '../services/theme_service.dart';
 
 class MessagesScreen extends StatefulWidget {
   const MessagesScreen({super.key});
@@ -11,6 +12,7 @@ class MessagesScreen extends StatefulWidget {
 
 class _MessagesScreenState extends State<MessagesScreen> {
   final MessageService _messageService = MessageService.instance;
+  final ThemeService _themeService = ThemeService.instance;
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
@@ -23,6 +25,22 @@ class _MessagesScreenState extends State<MessagesScreen> {
         _scrollToBottom();
       });
     });
+    // Listen to theme changes
+    _themeService.addListener(_onThemeChanged);
+  }
+
+  void _onThemeChanged() {
+    setState(() {});
+  }
+
+  @override
+  void dispose() {
+    _themeService.removeListener(_onThemeChanged);
+    _textController.dispose();
+    _scrollController.dispose();
+    // Don't dispose the singleton service - it should persist across navigations
+    // _messageService.dispose();
+    super.dispose();
   }
 
   void _scrollToBottom() {
@@ -44,22 +62,23 @@ class _MessagesScreenState extends State<MessagesScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _textController.dispose();
-    _scrollController.dispose();
-    // Don't dispose the singleton service - it should persist across navigations
-    // _messageService.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Support Chat'),
         elevation: 0,
         actions: [
+          IconButton(
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            onPressed: () async {
+              await _themeService.toggleTheme();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () {
@@ -118,10 +137,11 @@ class _MessagesScreenState extends State<MessagesScreen> {
   }
 
   Widget _buildInputArea() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? Colors.grey[850] : Colors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -136,14 +156,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
             Expanded(
               child: TextField(
                 controller: _textController,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: InputDecoration(
                   hintText: 'Type a message...',
+                  hintStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600]),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(24),
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor: isDark ? Colors.grey[800] : Colors.grey[200],
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 10,
@@ -177,6 +199,8 @@ class _MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.isFromUser;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -196,7 +220,9 @@ class _MessageBubble extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isUser ? Colors.blue : Colors.grey[200],
+                color: isUser 
+                    ? Colors.blue 
+                    : (isDark ? Colors.grey[700] : Colors.grey[200]),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -210,7 +236,9 @@ class _MessageBubble extends StatelessWidget {
                   Text(
                     message.text,
                     style: TextStyle(
-                      color: isUser ? Colors.white : Colors.black87,
+                      color: isUser 
+                          ? Colors.white 
+                          : (isDark ? Colors.white : Colors.black87),
                       fontSize: 16,
                     ),
                   ),
@@ -220,7 +248,7 @@ class _MessageBubble extends StatelessWidget {
                     style: TextStyle(
                       color: isUser
                           ? Colors.white.withOpacity(0.7)
-                          : Colors.black54,
+                          : (isDark ? Colors.grey[300] : Colors.black54),
                       fontSize: 11,
                     ),
                   ),

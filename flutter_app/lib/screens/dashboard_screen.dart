@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import '../services/theme_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -11,6 +12,7 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   late final WebViewController _controller;
+  final ThemeService _themeService = ThemeService.instance;
   bool _isLoading = true;
   String? _error;
   int _retryCount = 0;
@@ -21,6 +23,65 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _initializeWebView();
+    // Listen to theme changes
+    _themeService.addListener(_onThemeChanged);
+  }
+
+  void _onThemeChanged() {
+    setState(() {});
+    // Sync theme with Angular dashboard
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _syncThemeToWebView();
+    });
+  }
+
+  Future<void> _syncThemeToWebView() async {
+    if (!mounted) return;
+    
+    try {
+      // Determine if dark mode based on theme mode
+      bool isDark;
+      if (_themeService.themeMode == ThemeMode.dark) {
+        isDark = true;
+      } else if (_themeService.themeMode == ThemeMode.light) {
+        isDark = false;
+      } else {
+        // System mode - check the actual platform brightness
+        isDark = MediaQuery.of(context).platformBrightness == Brightness.dark;
+      }
+      
+      final themeValue = isDark ? 'dark' : 'light';
+      
+      // Inject JavaScript to sync theme with Angular app
+      final jsCode = '''
+        (function() {
+          // Set localStorage to match Flutter theme
+          localStorage.setItem('theme_preference', '$themeValue');
+          
+          // Apply/remove dark class
+          if (${isDark.toString()}) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+          
+          // Dispatch custom event to notify Angular theme service
+          window.dispatchEvent(new CustomEvent('flutter-theme-changed', { 
+            detail: { isDark: ${isDark.toString()} } 
+          }));
+        })();
+      ''';
+      
+      await _controller.runJavaScript(jsCode);
+    } catch (e) {
+      print('Error syncing theme to WebView: $e');
+    }
+  }
+
+  @override
+  void dispose() {
+    _themeService.removeListener(_onThemeChanged);
+    super.dispose();
   }
 
   void _initializeWebView() {
@@ -51,6 +112,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             setState(() {
               _isLoading = false;
             });
+            // Sync theme when page finishes loading
+            _syncThemeToWebView();
           },
           onWebResourceError: (WebResourceError error) {
             setState(() {
@@ -122,10 +185,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Internal Tools Dashboard'),
         actions: [
+          IconButton(
+            icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            tooltip: isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode',
+            onPressed: () async {
+              await _themeService.toggleTheme();
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {

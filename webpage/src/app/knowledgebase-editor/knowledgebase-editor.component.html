@@ -1,12 +1,13 @@
 <div class="max-w-7xl mx-auto">
-  <div class="bg-white rounded-lg shadow-md p-4 sm:p-6">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 transition-colors">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-      <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Knowledge Base Editor</h2>
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Knowledge Base Editor</h2>
       <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
         <button
           (click)="togglePreview()"
           [class.bg-blue-600]="previewMode"
           [class.bg-gray-300]="!previewMode"
+          [class.dark:bg-gray-600]="!previewMode"
           class="px-4 py-2.5 rounded-lg font-medium text-white transition-colors w-full sm:w-auto text-sm sm:text-base">
           {{ previewMode ? 'Edit Mode' : 'Preview Mode' }}
         </button>
@@ -23,26 +24,26 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6" *ngIf="!previewMode">
       <!-- Editor -->
       <div class="flex flex-col">
-        <label class="text-sm font-medium text-gray-700 mb-2">Markdown Editor</label>
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Markdown Editor</label>
         <textarea
           [(ngModel)]="content"
-          class="flex-1 w-full p-4 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          class="flex-1 w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg font-mono text-sm dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           rows="20"
           placeholder="Write your article in Markdown format..."></textarea>
       </div>
 
       <!-- Preview -->
       <div class="flex flex-col">
-        <label class="text-sm font-medium text-gray-700 mb-2">Preview</label>
-        <div class="flex-1 w-full p-4 border border-gray-300 rounded-lg bg-gray-50 overflow-y-auto">
-          <div class="prose max-w-none" [innerHTML]="getPreviewHtml()"></div>
+        <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Preview</label>
+        <div class="flex-1 w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 overflow-y-auto">
+          <div class="prose max-w-none dark:prose-invert" [innerHTML]="getPreviewHtml()"></div>
         </div>
       </div>
     </div>
 
     <!-- Full Preview Mode -->
-    <div *ngIf="previewMode" class="border border-gray-300 rounded-lg p-4 sm:p-8 bg-white">
-      <div class="prose max-w-none" [innerHTML]="getPreviewHtml()"></div>
+    <div *ngIf="previewMode" class="border border-gray-300 dark:border-gray-600 rounded-lg p-4 sm:p-8 bg-white dark:bg-gray-900">
+      <div class="prose max-w-none dark:prose-invert" [innerHTML]="getPreviewHtml()"></div>
     </div>
   </div>
 </div>

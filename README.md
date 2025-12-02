@@ -34,6 +34,8 @@ This project contains a Flutter messaging application with an embedded Angular d
 - ✅ Simulated support agent responses
 - ✅ Clear messages functionality
 - ✅ **Message persistence** (messages saved locally using SharedPreferences)
+- ✅ **Dark mode support** with theme toggle in app bar
+- ✅ **Theme synchronization** with embedded Angular dashboard
 - ✅ Embedded WebView for Angular dashboard
 - ✅ Bottom navigation between Messages and Dashboard
 
@@ -41,7 +43,9 @@ This project contains a Flutter messaging application with an embedded Angular d
 - ✅ Ticket Viewer with filterable support tickets (Open, In Progress, Closed)
 - ✅ Knowledge Base Editor with Markdown editing and live preview
 - ✅ Live Logs Panel with simulated real-time log updates
-- ✅ Responsive design with Tailwind CSS
+- ✅ **Dark mode support** with theme toggle in sidebar
+- ✅ **Theme synchronization** with Flutter app (receives theme changes from Flutter)
+- ✅ Fully responsive design with Tailwind CSS (mobile-optimized)
 - ✅ Sidebar navigation between modules
 - ✅ Modern, clean UI design
 
@@ -149,16 +153,19 @@ flutter pub get
 3. Wait for the simulated support agent response (appears after ~1.5 seconds)
 4. Messages automatically scroll to show the latest
 5. Use the trash icon in the app bar to clear all messages
+6. Toggle dark mode using the sun/moon icon in the app bar
 
 ### Dashboard Screen
 1. Navigate to the Dashboard tab using bottom navigation
 2. The Angular dashboard will load in a WebView
 3. If you see an error, make sure the Angular server is running on port 4200
 4. Use the refresh button to reload the dashboard
-5. Navigate between different sections using the sidebar:
+5. Toggle dark mode using the sun/moon icon in the app bar (syncs with Angular dashboard)
+6. Navigate between different sections using the sidebar:
    - **Ticket Viewer**: View and filter support tickets
    - **Knowledge Base Editor**: Edit articles with Markdown support
    - **Live Logs**: Monitor real-time system logs
+7. Toggle dark mode in Angular using the theme button in the sidebar
 
 ## Troubleshooting
 
@@ -231,27 +238,36 @@ flutter pub get
 ## Development Notes
 
 ### Message Persistence
-✅ **Implemented**: Messages are automatically saved to local storage using SharedPreferences and restored when the app is reopened. Messages persist across app restarts.
+✅ **Implemented**: Messages are automatically saved to local storage using SharedPreferences and restored when the app is reopened. Messages persist across app restarts. The service uses a singleton pattern to maintain state across screen navigations.
+
+### Dark Mode & Theme Synchronization
+✅ **Implemented**: Both Flutter and Angular apps support dark mode with synchronized themes:
+- **Flutter**: Toggle dark mode using the sun/moon icon in the app bar (available on both Messages and Dashboard screens)
+- **Angular**: Toggle dark mode using the theme button in the sidebar navigation
+- **Synchronization**: When you change the theme in Flutter, it automatically syncs to the embedded Angular dashboard via JavaScript injection
+- **Persistence**: Theme preferences are saved locally and persist across app restarts
 
 ### Additional Bonus Features
 The following features can be added as further enhancements:
 - Notification badges for unread messages
 - Emoji picker for emoji support
 - Image message support
-- Dark mode toggle
 - Message search functionality
+- Two-way theme synchronization (Angular → Flutter)
 
 ## Technical Stack
 
 ### Flutter App
 - **Framework**: Flutter 3.0+
-- **State Management**: StreamBuilder with StreamController
-- **WebView**: webview_flutter package
-- **Local Storage**: shared_preferences (available but not yet implemented)
+- **State Management**: StreamBuilder with StreamController, Singleton pattern for services
+- **WebView**: webview_flutter package with JavaScript injection for theme sync
+- **Local Storage**: shared_preferences (for message and theme persistence)
+- **Theme Management**: Custom ThemeService with light/dark theme support
 
 ### Angular Dashboard
 - **Framework**: Angular 16+
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS with dark mode support (class-based)
+- **Theme Management**: ThemeService with localStorage persistence and Flutter event listeners
 - **Routing**: Angular Router
 - **HTTP Server**: Angular CLI dev server (ng serve)
 

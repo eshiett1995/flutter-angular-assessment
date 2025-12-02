@@ -8,11 +8,14 @@ void main() {
     late MessageService messageService;
 
     setUp(() {
-      messageService = MessageService();
+      messageService = MessageService.instance;
+      // Reset service state for clean test environment
+      messageService.resetForTesting();
     });
 
     tearDown(() {
-      messageService.dispose();
+      // Note: We don't dispose the singleton, but we reset state
+      messageService.resetForTesting();
     });
 
     test('should initialize with welcome message when no saved messages', () async {

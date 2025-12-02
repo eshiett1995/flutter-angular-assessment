@@ -1,6 +1,6 @@
 <div class="max-w-7xl mx-auto">
-  <div class="bg-white rounded-lg shadow-md p-6">
-    <h2 class="text-3xl font-bold text-gray-800 mb-6">Support Tickets</h2>
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors">
+    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6">Support Tickets</h2>
     
     <!-- Filter Buttons -->
     <div class="flex flex-wrap gap-3 mb-6">
@@ -9,7 +9,9 @@
         [class.bg-blue-600]="selectedFilter === 'All'"
         [class.text-white]="selectedFilter === 'All'"
         [class.bg-gray-200]="selectedFilter !== 'All'"
+        [class.dark:bg-gray-700]="selectedFilter !== 'All'"
         [class.text-gray-700]="selectedFilter !== 'All'"
+        [class.dark:text-gray-300]="selectedFilter !== 'All'"
         class="px-4 py-2 rounded-lg font-medium transition-colors hover:bg-blue-500 hover:text-white">
         All ({{ tickets.length }})
       </button>
@@ -18,7 +20,9 @@
         [class.bg-blue-600]="selectedFilter === 'Open'"
         [class.text-white]="selectedFilter === 'Open'"
         [class.bg-gray-200]="selectedFilter !== 'Open'"
+        [class.dark:bg-gray-700]="selectedFilter !== 'Open'"
         [class.text-gray-700]="selectedFilter !== 'Open'"
+        [class.dark:text-gray-300]="selectedFilter !== 'Open'"
         class="px-4 py-2 rounded-lg font-medium transition-colors hover:bg-blue-500 hover:text-white">
         Open ({{ openTicketCount }})
       </button>
@@ -27,7 +31,9 @@
         [class.bg-blue-600]="selectedFilter === 'In Progress'"
         [class.text-white]="selectedFilter === 'In Progress'"
         [class.bg-gray-200]="selectedFilter !== 'In Progress'"
+        [class.dark:bg-gray-700]="selectedFilter !== 'In Progress'"
         [class.text-gray-700]="selectedFilter !== 'In Progress'"
+        [class.dark:text-gray-300]="selectedFilter !== 'In Progress'"
         class="px-4 py-2 rounded-lg font-medium transition-colors hover:bg-blue-500 hover:text-white">
         In Progress ({{ inProgressTicketCount }})
       </button>
@@ -36,7 +42,9 @@
         [class.bg-blue-600]="selectedFilter === 'Closed'"
         [class.text-white]="selectedFilter === 'Closed'"
         [class.bg-gray-200]="selectedFilter !== 'Closed'"
+        [class.dark:bg-gray-700]="selectedFilter !== 'Closed'"
         [class.text-gray-700]="selectedFilter !== 'Closed'"
+        [class.dark:text-gray-300]="selectedFilter !== 'Closed'"
         class="px-4 py-2 rounded-lg font-medium transition-colors hover:bg-blue-500 hover:text-white">
         Closed ({{ closedTicketCount }})
       </button>
@@ -44,30 +52,30 @@
 
     <!-- Tickets Table -->
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subject</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Subject</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Created At</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr *ngFor="let ticket of filteredTickets" class="hover:bg-gray-50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ ticket.id }}</td>
-            <td class="px-6 py-4 text-sm text-gray-900">{{ ticket.subject }}</td>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr *ngFor="let ticket of filteredTickets" class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#{{ ticket.id }}</td>
+            <td class="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">{{ ticket.subject }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span [class]="'px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full border ' + getStatusClass(ticket.status)">
                 {{ ticket.status }}
               </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(ticket.createdAt) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ formatDate(ticket.createdAt) }}</td>
           </tr>
         </tbody>
       </table>
       
-      <div *ngIf="filteredTickets.length === 0" class="text-center py-12 text-gray-500">
+      <div *ngIf="filteredTickets.length === 0" class="text-center py-12 text-gray-500 dark:text-gray-400">
         <p>No tickets found with the selected filter.</p>
       </div>
     </div>

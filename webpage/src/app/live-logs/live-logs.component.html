@@ -1,12 +1,13 @@
 <div class="max-w-7xl mx-auto">
-  <div class="bg-white rounded-lg shadow-md p-4 sm:p-6">
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 sm:p-6 transition-colors">
     <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
-      <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">Live System Logs</h2>
+      <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Live System Logs</h2>
       <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
         <button
           (click)="toggleAutoScroll()"
           [class.bg-blue-600]="autoScroll"
           [class.bg-gray-300]="!autoScroll"
+          [class.dark:bg-gray-600]="!autoScroll"
           class="px-4 py-2.5 rounded-lg font-medium text-white transition-colors w-full sm:w-auto text-sm sm:text-base">
           {{ autoScroll ? 'Auto-scroll: ON' : 'Auto-scroll: OFF' }}
         </button>
@@ -41,7 +42,7 @@
       </div>
     </div>
 
-    <div class="mt-4 text-sm text-gray-600">
+    <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">
       <p>Total logs: {{ logs.length }}</p>
     </div>
   </div>

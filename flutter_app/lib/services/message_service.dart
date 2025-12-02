@@ -150,6 +150,15 @@ class MessageService {
     }
   }
 
+  /// Reset the service state for testing purposes
+  /// This clears messages and resets initialization state
+  void resetForTesting() {
+    _messages.clear();
+    _isInitialized = false;
+    _initializationFuture = null;
+    _messagesController.add(_messages);
+  }
+
   void dispose() {
     _messagesController.close();
   }
