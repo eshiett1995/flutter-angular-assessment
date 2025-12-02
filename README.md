@@ -37,6 +37,7 @@ This project contains a Flutter messaging application with an embedded Angular d
 - ✅ **Emoji support** with emoji picker (tap emoji button to open picker)
 - ✅ **Image message support** (choose from gallery or take photo)
 - ✅ **Image persistence** (images saved to app storage and persist across restarts)
+- ✅ **Notification badge** for unread messages (shows count on Messages tab)
 - ✅ **Dark mode support** with theme toggle in app bar
 - ✅ **Theme synchronization** with embedded Angular dashboard
 - ✅ Embedded WebView for Angular dashboard
@@ -162,8 +163,10 @@ flutter pub get
    - Choose an image from your gallery
    - Take a photo with your camera
 7. Images display in message bubbles and persist across app restarts
-8. Use the trash icon in the app bar to clear all messages
-9. Toggle dark mode using the sun/moon icon in the app bar
+8. **Notification badge**: When you receive new agent messages while on the Dashboard, a red badge with the unread count appears on the Messages tab
+9. The badge automatically clears when you view the Messages screen
+10. Use the trash icon in the app bar to clear all messages
+11. Toggle dark mode using the sun/moon icon in the app bar
 
 ### Dashboard Screen
 1. Navigate to the Dashboard tab using bottom navigation
@@ -286,13 +289,22 @@ This lightweight approach works well for the app's current scope and avoids unne
   - Android: Camera and storage permissions configured
   - iOS: Camera and photo library usage descriptions added
 
+### Notification Badge for Unread Messages
+✅ **Implemented**: 
+- **Unread Count Tracking**: Tracks agent messages received after the last time you viewed the Messages screen
+- **Badge Display**: Shows a red notification badge with the unread count on the Messages tab in the bottom navigation
+- **Auto-Clear**: Badge automatically clears when you navigate to the Messages screen
+- **Persistence**: Last viewed timestamp is saved, so the badge persists across app restarts
+- **Real-time Updates**: Badge updates immediately when new agent messages arrive
+
 ### Additional Bonus Features
 The following features can be added as further enhancements:
-- Notification badges for unread messages
 - Message search functionality
 - Two-way theme synchronization (Angular → Flutter)
 - Image compression/optimization
 - Video message support
+- Push notifications for new messages
+- Message reactions/emojis
 
 ## Technical Stack
 
@@ -335,6 +347,7 @@ This project meets all the requirements specified in the assessment:
 - ✅ Emoji picker and emoji message support
 - ✅ Image message support (gallery & camera)
 - ✅ Message and image persistence
+- ✅ Notification badge for unread messages
 - ✅ Mobile-responsive Angular dashboard
 
 ## License
