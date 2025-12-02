@@ -34,6 +34,8 @@ class _MessagesScreenState extends State<MessagesScreen> {
     });
     // Listen to theme changes
     _themeService.addListener(_onThemeChanged);
+    // Mark messages as read when screen is viewed
+    _messageService.markAsRead();
   }
 
   void _onThemeChanged() {

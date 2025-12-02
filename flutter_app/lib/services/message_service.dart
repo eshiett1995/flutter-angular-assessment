@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/message.dart';
 import 'storage_service.dart';
 
@@ -14,14 +15,24 @@ class MessageService {
   MessageService._internal();
 
   final _messagesController = StreamController<List<Message>>.broadcast();
+  final _unreadCountController = StreamController<int>.broadcast();
   final List<Message> _messages = [];
   final Random _random = Random();
   final StorageService _storageService = StorageService();
   bool _isInitialized = false;
   Future<void>? _initializationFuture;
+  DateTime? _lastViewedTimestamp;
 
   Stream<List<Message>> get messagesStream => _messagesController.stream;
+  Stream<int> get unreadCountStream => _unreadCountController.stream;
   List<Message> get messages => List.unmodifiable(_messages);
+  
+  int get unreadCount {
+    if (_lastViewedTimestamp == null) return 0;
+    return _messages.where((m) => 
+      !m.isFromUser && m.timestamp.isAfter(_lastViewedTimestamp!)
+    ).length;
+  }
 
   final List<String> _agentResponses = [
     "Hello! How can I assist you today?",
@@ -73,20 +84,23 @@ class MessageService {
         print('✅ No saved messages found, initialized with welcome message');
       }
       
-      _isInitialized = true;
-      _messagesController.add(_messages);
-    } catch (e) {
-      print('❌ Error initializing MessageService: $e');
-      // Even on error, mark as initialized to prevent infinite retries
-      _isInitialized = true;
-      // Initialize with welcome message as fallback
-      if (_messages.isEmpty) {
-        _initializeDefaultMessage();
-      }
-      _messagesController.add(_messages);
-      rethrow;
-    }
-  }
+         _isInitialized = true;
+         await _loadLastViewedTimestamp();
+         _messagesController.add(_messages);
+         _updateUnreadCount();
+       } catch (e) {
+         print('❌ Error initializing MessageService: $e');
+         // Even on error, mark as initialized to prevent infinite retries
+         _isInitialized = true;
+         // Initialize with welcome message as fallback
+         if (_messages.isEmpty) {
+           _initializeDefaultMessage();
+         }
+         _messagesController.add(_messages);
+         _updateUnreadCount();
+         rethrow;
+       }
+     }
 
   void _initializeDefaultMessage() {
     _messages.add(Message(
@@ -115,6 +129,7 @@ class MessageService {
 
     _messages.add(message);
     _messagesController.add(_messages);
+    _updateUnreadCount();
     _saveMessages();
 
     // Simulate agent response after user message (only for text messages)
@@ -123,6 +138,39 @@ class MessageService {
         final response = _agentResponses[_random.nextInt(_agentResponses.length)];
         addMessage(response, isFromUser: false);
       });
+    }
+  }
+  
+  void markAsRead() {
+    _lastViewedTimestamp = DateTime.now();
+    _updateUnreadCount();
+    _saveLastViewedTimestamp();
+  }
+  
+  void _updateUnreadCount() {
+    _unreadCountController.add(unreadCount);
+  }
+  
+  Future<void> _saveLastViewedTimestamp() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (_lastViewedTimestamp != null) {
+        await prefs.setString('last_viewed_timestamp', _lastViewedTimestamp!.toIso8601String());
+      }
+    } catch (e) {
+      print('Error saving last viewed timestamp: $e');
+    }
+  }
+  
+  Future<void> _loadLastViewedTimestamp() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final timestampString = prefs.getString('last_viewed_timestamp');
+      if (timestampString != null) {
+        _lastViewedTimestamp = DateTime.parse(timestampString);
+      }
+    } catch (e) {
+      print('Error loading last viewed timestamp: $e');
     }
   }
 
@@ -149,6 +197,7 @@ class MessageService {
     } else {
       // Already initialized, just emit current messages
       _messagesController.add(_messages);
+      _updateUnreadCount();
     }
   }
 
@@ -163,6 +212,7 @@ class MessageService {
 
   void dispose() {
     _messagesController.close();
+    _unreadCountController.close();
   }
 }
 
