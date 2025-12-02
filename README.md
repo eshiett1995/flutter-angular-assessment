@@ -105,10 +105,10 @@ The Angular app will be available at `http://localhost:4200`
 ### 2. Flutter App Setup
 
 **Note:** This project includes two Flutter implementations:
-- **`flutter_app/`** - Uses built-in Flutter state management (StreamController, ChangeNotifier)
-- **`flutter_app_riverpod/`** - Uses Riverpod for state management (demonstrates alternative approach)
+- **`flutter_app/`** - The original implementation using Flutter's built-in reactive programming patterns (StreamController, ChangeNotifier, StreamBuilder)
+- **`flutter_app_riverpod/`** - A Riverpod-based implementation demonstrating modern state management (added for comparison)
 
-Both implementations have identical features and functionality. Choose the one you prefer, or review both to see different state management approaches.
+Both implementations have identical features and functionality. The original `flutter_app` showcases reactive programming with Flutter's native capabilities, while `flutter_app_riverpod` demonstrates how the same app would be structured using Riverpod. Review both to compare different state management approaches, or choose the one that aligns with your preferences.
 
 #### Option A: Built-in State Management (`flutter_app/`)
 
@@ -273,31 +273,36 @@ flutter pub get
 
 ### State Management
 
-This project includes **two Flutter implementations** demonstrating different state management approaches:
+This project includes **two Flutter implementations** demonstrating different state management approaches, allowing you to compare reactive programming patterns with a modern state management solution:
 
-#### `flutter_app/` - Built-in State Management
-✅ **Approach**: Uses Flutter's built-in reactive patterns without external state management libraries:
+#### `flutter_app/` - Reactive Programming Approach
+✅ **Approach**: The original implementation uses Flutter's built-in reactive patterns without external state management libraries:
 - **StreamController + StreamBuilder**: Used for message updates (reactive streams)
 - **ChangeNotifier**: Used for theme management (observer pattern)
 - **StatefulWidget + setState**: Used for local UI state
 - **Singleton Pattern**: Services are singletons to maintain state across screen navigations
 
-This lightweight approach works well for the app's current scope and avoids unnecessary dependencies.
+This lightweight, reactive approach works well for the app's current scope and demonstrates how Flutter's native reactive capabilities can handle state management effectively without additional dependencies.
 
-#### `flutter_app_riverpod/` - Riverpod Implementation
-✅ **Approach**: Demonstrates how the same app would be structured using Riverpod:
+#### `flutter_app_riverpod/` - Riverpod State Management Implementation
+✅ **Approach**: A refactored implementation using Riverpod, showcasing how the same app would be structured with a modern state management solution:
 - **StateNotifierProvider**: Used for message and theme state management
-- **AsyncValue**: Handles loading, error, and data states for messages
+- **AsyncValue**: Handles loading, error, and data states for messages elegantly
 - **ConsumerWidget/ConsumerStatefulWidget**: Screens use Riverpod consumers for reactive updates
 - **Provider Pattern**: All state is managed through providers in `lib/providers/`
+- **StateProvider**: Replaces `setState()` calls for UI state (emoji picker, tab navigation)
+- **ProviderObserver**: Added for debugging and monitoring provider lifecycle
+- **AutoDispose**: Used for UI-only providers that don't need to persist
 
 **Key Benefits of Riverpod:**
 - Better testability and dependency injection
 - Compile-time safety for state access
 - More structured, scalable approach for larger projects
 - Clear separation of concerns
+- Eliminates the need for `setState()` calls
+- Built-in debugging tools and provider lifecycle management
 
-Both implementations have identical features and functionality. The Riverpod version is included for reviewers who want to see how the app would be structured with a popular state management solution.
+Both implementations have identical features and functionality. The Riverpod version was added to demonstrate how the app would be structured using a popular, modern state management solution, and serves as a reference for those curious about comparing reactive programming patterns with Riverpod's provider-based approach.
 
 ### Message Persistence
 ✅ **Implemented**: Messages are automatically saved to local storage using SharedPreferences and restored when the app is reopened. Messages persist across app restarts. The service uses a singleton pattern to maintain state across screen navigations.
