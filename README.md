@@ -6,11 +6,19 @@ This project contains a Flutter messaging application with an embedded Angular d
 
 ```
 .
-├── flutter_app/          # Flutter messaging app
+├── flutter_app/          # Flutter messaging app (built-in state management)
 │   ├── lib/
 │   │   ├── models/       # Data models
 │   │   ├── screens/      # UI screens
 │   │   ├── services/     # Business logic services
+│   │   └── main.dart     # Entry point
+│   └── pubspec.yaml      # Flutter dependencies
+├── flutter_app_riverpod/ # Flutter messaging app (Riverpod implementation)
+│   ├── lib/
+│   │   ├── models/       # Data models
+│   │   ├── screens/      # UI screens (using Riverpod)
+│   │   ├── services/     # Storage service
+│   │   ├── providers/    # Riverpod providers
 │   │   └── main.dart     # Entry point
 │   └── pubspec.yaml      # Flutter dependencies
 ├── webpage/              # Angular dashboard app
@@ -95,6 +103,14 @@ The Angular app will be available at `http://localhost:4200`
 **Important:** Keep this server running while using the Flutter app, as the WebView needs to access it.
 
 ### 2. Flutter App Setup
+
+**Note:** This project includes two Flutter implementations:
+- **`flutter_app/`** - Uses built-in Flutter state management (StreamController, ChangeNotifier)
+- **`flutter_app_riverpod/`** - Uses Riverpod for state management (demonstrates alternative approach)
+
+Both implementations have identical features and functionality. Choose the one you prefer, or review both to see different state management approaches.
+
+#### Option A: Built-in State Management (`flutter_app/`)
 
 1. Navigate to the Flutter app directory:
 ```bash
@@ -256,13 +272,32 @@ flutter pub get
 ## Development Notes
 
 ### State Management
-✅ **Approach**: The app uses Flutter's built-in reactive patterns without external state management libraries:
+
+This project includes **two Flutter implementations** demonstrating different state management approaches:
+
+#### `flutter_app/` - Built-in State Management
+✅ **Approach**: Uses Flutter's built-in reactive patterns without external state management libraries:
 - **StreamController + StreamBuilder**: Used for message updates (reactive streams)
 - **ChangeNotifier**: Used for theme management (observer pattern)
 - **StatefulWidget + setState**: Used for local UI state
 - **Singleton Pattern**: Services are singletons to maintain state across screen navigations
 
-This lightweight approach works well for the app's current scope and avoids unnecessary dependencies. For larger projects with more complex state requirements, consider using **Riverpod** or **Provider** for better dependency injection, state organization, and testability.
+This lightweight approach works well for the app's current scope and avoids unnecessary dependencies.
+
+#### `flutter_app_riverpod/` - Riverpod Implementation
+✅ **Approach**: Demonstrates how the same app would be structured using Riverpod:
+- **StateNotifierProvider**: Used for message and theme state management
+- **AsyncValue**: Handles loading, error, and data states for messages
+- **ConsumerWidget/ConsumerStatefulWidget**: Screens use Riverpod consumers for reactive updates
+- **Provider Pattern**: All state is managed through providers in `lib/providers/`
+
+**Key Benefits of Riverpod:**
+- Better testability and dependency injection
+- Compile-time safety for state access
+- More structured, scalable approach for larger projects
+- Clear separation of concerns
+
+Both implementations have identical features and functionality. The Riverpod version is included for reviewers who want to see how the app would be structured with a popular state management solution.
 
 ### Message Persistence
 ✅ **Implemented**: Messages are automatically saved to local storage using SharedPreferences and restored when the app is reopened. Messages persist across app restarts. The service uses a singleton pattern to maintain state across screen navigations.
