@@ -262,7 +262,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 onEmojiSelected: (category, emoji) {
                   _onEmojiSelected(emoji);
                 },
-                config: Config(
+                config: const Config(
                   height: 256,
                   checkPlatformCompatibility: true,
                 ),

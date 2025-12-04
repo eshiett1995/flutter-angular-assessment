@@ -77,9 +77,6 @@ export class LiveLogsComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   generateLog() {
-    const levels: ('INFO' | 'WARN' | 'ERROR' | 'DEBUG')[] = ['INFO', 'WARN', 'ERROR', 'DEBUG'];
-    const level = levels[Math.floor(Math.random() * levels.length)];
-    
     // Make errors less frequent
     const actualLevel = Math.random() > 0.85 ? 'ERROR' : 
                        Math.random() > 0.7 ? 'WARN' : 

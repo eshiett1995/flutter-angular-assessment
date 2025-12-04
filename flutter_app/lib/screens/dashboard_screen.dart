@@ -94,7 +94,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       // For iOS simulator, use localhost
       url = 'http://localhost:4200';
     } else {
-      // For web/desktop
+      // For web/desktop/others, use localhost
       url = 'http://localhost:4200';
     }
 

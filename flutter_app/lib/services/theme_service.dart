@@ -28,7 +28,7 @@ class ThemeService extends ChangeNotifier {
         brightness: Brightness.light,
       ),
       scaffoldBackgroundColor: Colors.grey[50],
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0,
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,

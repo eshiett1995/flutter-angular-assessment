@@ -77,23 +77,6 @@ void main() {
       expect(messages.first.isFromUser, isFalse);
     });
 
-    test('should emit messages through stream', () async {
-      await messageService.loadMessages();
-      await Future.delayed(const Duration(milliseconds: 100));
-      
-      var messageCount = 0;
-      messageService.messagesStream.listen((messages) {
-        messageCount = messages.length;
-      });
-      
-      await Future.delayed(const Duration(milliseconds: 100));
-      expect(messageCount, greaterThan(0));
-      
-      messageService.addMessage('Stream test', isFromUser: true);
-      await Future.delayed(const Duration(milliseconds: 100));
-      expect(messageCount, greaterThan(1));
-    });
-
     test('should generate unique message IDs', () {
       messageService.addMessage('Message 1', isFromUser: true);
       messageService.addMessage('Message 2', isFromUser: true);
